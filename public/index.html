@@ -17,5 +17,56 @@
         <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
         <script src="https://unpkg.com/react@15/dist/react.js"></script>
         <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+
+        <!--Create React Component-->
+        <script type="text/babel">
+            let Ninjas = React.createClass({
+                getInitialState: function() {
+                    return({
+                        ninjas: []
+                    })
+                },
+                render: function() {
+                    const ninjas = this.state.ninjas.map((ninja, index) => {
+                        return(
+                            <li key={index}>
+                                <span className={ninja.available}></span>
+                                <span className="name">{ninja.name}</span>
+                                <span className="rank">{ninja.rank}</span>
+                                <span className="dist">{Math.floor(ninja.dist.calculated / 1000)}</span>
+                            </li>
+                        );
+                    })
+                    return(
+                        <div id="ninja-container">
+                            <form id ="search" onSubmit={this.handleSubmit}>
+                                <label>Enter your latitude</label>
+                                <input type="text" ref="lat" placeholder="latitude" required/>
+                                <label>Enter your longitude</label>
+                                <input type="text" ref="lng" placeholder="longitude" required/>
+                                <input type="submit" value="Find Nijas"/>
+                            </form>
+                            <ul>{ninjas}</ul>
+                        </div>
+                    );
+                },
+                handleSubmit: function(evt) {
+                    evt.preventDefault();
+                    let lng = this.refs.lng.value;//this gives value form input field for lng
+                    let lat = this.refs.lat.value;//this gives value form input field for lat
+                    console.log('query','/api/ninjas?lng=' + lng + '&lat=' + lat);
+                    fetch('/api/ninjas?lng=' + lng + '&lat=' + lat).then(data => {
+                        return data.json();
+                    }).then(json => {
+                        this.setState({
+                            ninjas: json
+                        })
+                    })
+                }
+            });
+
+            ReactDOM.render(<Ninjas/>, document.getElementById('ninjas'))
+        </script>
     </body>
 </html>
