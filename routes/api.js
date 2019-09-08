@@ -5,8 +5,17 @@ const router = express.Router();
 
 //get a list of ninjas from DB
 router.get('/ninjas', function(req, res, next) {
-    res.send(req.body)
-
+    // Ninja.find({}).then(ninjaList => {
+    //     res.send(ninjaList);
+    // });
+    Ninja.aggregate().near({
+        near: [parseFloat(req.query.lng), parseFloat(req.query.lat)],
+        maxDistance: 100000,
+        spherical: true,
+        distanceField: "dist.calculated"
+    }).then(ninjaList => {
+        res.send(ninjaList);
+    });
    //res.end() --> to stop spiining in browser
 });
 
